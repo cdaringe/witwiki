@@ -1,15 +1,17 @@
 #![feature(const_trait_impl)]
 
 use crate::middleware::parse_cookies::middleware as cookie_middleware;
-use axum::body::Body;
+use axum::body::{Body, Bytes};
+use axum::extract::Path;
 use axum::middleware::from_fn;
+use axum::Extension;
 use axum::{
     http::StatusCode,
     response::IntoResponse,
     routing::{get, get_service},
     Router,
 };
-use middleware::app_state::State;
+use middleware::app_state::RequestState;
 use std::sync::Arc;
 use std::{io, net::SocketAddr};
 use tower::limit::ConcurrencyLimitLayer;
@@ -19,8 +21,6 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 mod components;
 mod middleware;
 mod pages;
-
-static state: Arc<State> = Arc::new(State::new());
 
 #[tokio::main]
 async fn main() {
@@ -35,11 +35,12 @@ async fn main() {
     let mut app: Router<Body> = Router::new();
     app = pages::bind(app);
     app = app
-        .route("/foo", get(|| async { "Hi from /foo" }))
-        .fallback(get_service(ServeDir::new("./browser/static")).handle_error(handle_error))
-        .layer(from_fn(|req, next| cookie_middleware(req, next, &state)))
+        .route("/foo", get(foo))
         .layer(TraceLayer::new_for_http())
-        .layer(ConcurrencyLimitLayer::new(64));
+        .layer(ConcurrencyLimitLayer::new(64))
+        .layer(from_fn(|req, next| cookie_middleware(req, next)))
+        .layer(Extension(RequestState::default()))
+        .fallback(get_service(ServeDir::new("./browser/static")).handle_error(handle_error));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     tracing::debug!("listening on http://{}", addr);
@@ -54,4 +55,16 @@ async fn handle_error(_err: io::Error) -> impl IntoResponse {
         StatusCode::INTERNAL_SERVER_ERROR,
         "Something went wrong. :|",
     )
+}
+
+async fn foo(Extension(request_state): Extension<RequestState>) -> Result<Bytes, StatusCode> {
+    println!(
+        "num cookies in request_state: {:?}",
+        request_state.cookies_by_name.len()
+    );
+    if true {
+        Ok(Bytes::from("abc"))
+    } else {
+        Err(StatusCode::NOT_FOUND)
+    }
 }
