@@ -8,18 +8,29 @@ use axum::{
 use cookie::Cookie;
 use std::collections::HashMap;
 
-pub type Req = Request<Body>;
+use crate::authentication::LoggedIn;
+
+type CookieMap = HashMap<String, Cookie<'static>>;
 
 #[derive(Debug, Clone)]
 pub struct RequestState {
-    pub cookies_by_name: HashMap<String, Cookie<'static>>,
+    cookies_by_name: CookieMap,
+    user: Option<LoggedIn>,
 }
 
 impl RequestState {
     pub fn default() -> Self {
         RequestState {
             cookies_by_name: HashMap::new(),
+            user: None,
         }
+    }
+    pub fn get_cookies(&self) -> &CookieMap {
+        &self.cookies_by_name
+    }
+
+    pub fn set_cookies(&mut self, cookies_by_name: CookieMap) {
+        self.cookies_by_name = cookies_by_name;
     }
 }
 

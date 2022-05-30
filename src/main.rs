@@ -12,12 +12,12 @@ use axum::{
     Router,
 };
 use middleware::app_state::RequestState;
-use std::sync::Arc;
 use std::{io, net::SocketAddr};
 use tower::limit::ConcurrencyLimitLayer;
 use tower_http::{services::ServeDir, trace::TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+mod authentication;
 mod components;
 mod middleware;
 mod pages;
@@ -58,5 +58,5 @@ async fn handle_error(_err: io::Error) -> impl IntoResponse {
 }
 
 async fn echo_cookies(Extension(request_state): Extension<RequestState>) -> impl IntoResponse {
-    Html::from(format!("<h1>{:?}</h1>", request_state.cookies_by_name))
+    Html::from(format!("<h1>{:?}</h1>", request_state.get_cookies()))
 }

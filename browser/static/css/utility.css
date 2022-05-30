@@ -1,0 +1,51 @@
+.pa-2 {
+  padding: var(--pa2);
+}
+
+.pa-3 {
+  padding: var(--pa3);
+}
+
+.pa-4 {
+  padding: var(--pa4);
+}
+
+.w-full {
+  width: 100%;
+}
+
+.m-2 {
+  margin: var(--pa2);
+}
+.m-3 {
+  margin: var(--pa3);
+}
+
+.mt-2 {
+  margin-top: var(--pa2);
+}
+.mt-3 {
+  margin-top: var(--pa3);
+}
+
+.ml-2 {
+  margin-left: var(--pa2);
+}
+.ml-3 {
+  margin-left: var(--pa3);
+}
+
+.mr-2 {
+  margin-right: var(--pa2);
+}
+.mr-3 {
+  margin-right: var(--pa3);
+}
+
+.dib {
+  display: inline-block;
+}
+
+.fr {
+  float: right;
+}

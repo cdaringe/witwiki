@@ -1,0 +1,50 @@
+:root {
+  --pa2: 4px;
+  --pa3: 8px;
+  --pa4: 16px;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+}
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  display: grid;
+  grid-template-areas:
+    "header"
+    "main";
+  grid-template-rows: min-content 1fr;
+  margin: auto;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.header {
+  grid-area: header;
+  display: grid;
+  grid-template-areas:
+    "nav"
+    "search";
+  grid-template-rows: min-content min-content;
+}
+
+.header a {
+  margin-right: 8px;
+}
+
+.search {
+  grid-area: search;
+}
+
+main {
+  grid-area: main;
+}
+
+@media (max-width: 800px) {
+}

@@ -33,6 +33,6 @@ pub async fn middleware(mut req: Request<Body>, next: Next<Body>) -> impl IntoRe
         .map_or_else(|| "", |v| v.to_str().unwrap_or(""))
         .to_owned();
     let ext = req.extensions_mut().get_mut::<RequestState>().unwrap();
-    ext.cookies_by_name = get_cookies_by_name(&cookies_str);
+    ext.set_cookies(get_cookies_by_name(&cookies_str));
     next.run(req).await
 }

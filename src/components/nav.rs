@@ -14,20 +14,38 @@ pub fn link(href: &str, children: &str) -> Link {
 #[derive(Template)]
 #[template(
     source = r#"
-<nav>
-  {% for link in links %}
-  <a href={{link.href}}>{{link.children}}</a>
-  {% endfor %}
-</nav>
+<div class='header'>
+  <nav class='pa-3'>
+    <nav class='dib'>
+      {% for link in nav_links %}
+      <a href={{link.href}}>{{link.children}}</a>
+      {% endfor %}
+    </nav>
+    <nav class='fr'>
+      {% for link in action_links %}
+      <a href={{link.href}}>{{link.children}}</a>
+      {% endfor %}
+    </nav>
+  </nav>
+  <input class='search mt-3 ml-3 mr-3' placeholder="Search..." />
+  {{children}}
+</div>
 "#,
     ext = "html",
     escape = "none"
 )]
-struct NavT<'a> {
-    links: &'a Vec<Link>,
+struct HeaderT<'a> {
+    action_links: &'a Vec<Link>,
+    nav_links: &'a Vec<Link>,
     children: &'a str,
 }
 
-pub fn nav(links: &Vec<Link>, children: &str) -> String {
-    NavT { links, children }.render().unwrap()
+pub fn header(nav_links: &Vec<Link>, action_links: &Vec<Link>, children: &str) -> String {
+    HeaderT {
+        nav_links,
+        action_links,
+        children,
+    }
+    .render()
+    .unwrap()
 }

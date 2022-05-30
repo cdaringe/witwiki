@@ -8,9 +8,7 @@ use askama::Template;
   {{header}}
   <body>
     {{nav}}
-    <main>
-      {{children}}
-    </main>
+    {{children}}
   <body>
 </html>
 "#,
