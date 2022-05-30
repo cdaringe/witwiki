@@ -2,8 +2,8 @@
 
 use crate::middleware::parse_cookies::middleware as cookie_middleware;
 use axum::body::{Body, Bytes};
-use axum::extract::Path;
 use axum::middleware::from_fn;
+use axum::response::Html;
 use axum::Extension;
 use axum::{
     http::StatusCode,
@@ -35,7 +35,7 @@ async fn main() {
     let mut app: Router<Body> = Router::new();
     app = pages::bind(app);
     app = app
-        .route("/foo", get(foo))
+        .route("/foo", get(echo_cookies))
         .layer(TraceLayer::new_for_http())
         .layer(ConcurrencyLimitLayer::new(64))
         .layer(from_fn(|req, next| cookie_middleware(req, next)))
@@ -57,14 +57,6 @@ async fn handle_error(_err: io::Error) -> impl IntoResponse {
     )
 }
 
-async fn foo(Extension(request_state): Extension<RequestState>) -> Result<Bytes, StatusCode> {
-    println!(
-        "num cookies in request_state: {:?}",
-        request_state.cookies_by_name.len()
-    );
-    if true {
-        Ok(Bytes::from("abc"))
-    } else {
-        Err(StatusCode::NOT_FOUND)
-    }
+async fn echo_cookies(Extension(request_state): Extension<RequestState>) -> impl IntoResponse {
+    Html::from(format!("<h1>{:?}</h1>", request_state.cookies_by_name))
 }
