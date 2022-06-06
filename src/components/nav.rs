@@ -40,10 +40,29 @@ struct HeaderT<'a> {
     children: &'a str,
 }
 
-pub fn header(nav_links: &Vec<Link>, action_links: &Vec<Link>, children: &str) -> String {
+fn get_action_links(is_authenticated: bool) -> Vec<Link> {
+    let auth_link = if is_authenticated {
+        link("/logout", "logout")
+    } else {
+        link("/login", "login")
+    };
+    let mut action_links = if is_authenticated {
+        vec![
+            link("/x/user/settings", "user settings"),
+            link("/edit", "edit"),
+            link("/x/add", "add"),
+        ]
+    } else {
+        vec![]
+    };
+    action_links.insert(0, auth_link);
+    action_links
+}
+
+pub fn header(nav_links: &Vec<Link>, is_authenticated: bool, children: &str) -> String {
     HeaderT {
         nav_links,
-        action_links,
+        action_links: &get_action_links(is_authenticated),
         children,
     }
     .render()

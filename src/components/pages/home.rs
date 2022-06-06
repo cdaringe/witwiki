@@ -1,6 +1,6 @@
 use askama::Template;
 
-use crate::components::page::page;
+use crate::post::Post;
 
 #[derive(Template)]
 #[template(
@@ -11,6 +11,7 @@ use crate::components::page::page;
   <p>
     This wiki is ready to do the best work.
   </p>
+  {{recent_posts}}
   {{children}}
 </main>
 "#,
@@ -19,9 +20,27 @@ use crate::components::page::page;
 )]
 struct HomeT<'a> {
     title: &'a str,
+    recent_posts: &'a str,
     children: &'a str,
 }
 
-pub fn home(title: &str, children: &str) -> String {
-    HomeT { title, children }.render().unwrap()
+pub async fn home(title: &str, recent_posts: Vec<Post>, children: &str) -> String {
+    HomeT {
+        title,
+        recent_posts: &format!(
+            "<ul>{}</ul",
+            recent_posts
+                .into_iter()
+                .map(|x| format!(
+                    "<li><a href=\"{}\">{}</a></li>",
+                    format!("/wiki/{}", x.id),
+                    x.title
+                ))
+                .collect::<Vec<String>>()
+                .join("")
+        ),
+        children,
+    }
+    .render()
+    .unwrap()
 }

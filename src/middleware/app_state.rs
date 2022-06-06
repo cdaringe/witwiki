@@ -1,27 +1,28 @@
 use axum::{
     async_trait,
-    body::Body,
     extract::{FromRequest, RequestParts},
-    http::{Request, StatusCode},
+    http::StatusCode,
     Extension,
 };
 use cookie::Cookie;
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
-use crate::authentication::LoggedIn;
+use crate::{authentication::LoggedIn, db::Db};
 
 type CookieMap = HashMap<String, Cookie<'static>>;
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub struct RequestState {
     cookies_by_name: CookieMap,
     user: Option<LoggedIn>,
+    pub db: Arc<Db>,
 }
 
 impl RequestState {
-    pub fn default() -> Self {
+    pub fn new(db: Arc<Db>) -> Self {
         RequestState {
             cookies_by_name: HashMap::new(),
+            db,
             user: None,
         }
     }

@@ -11,7 +11,9 @@ axum = "0.5.6"
 axum-extra = "0.3.3"
 by_address = "1.0.4"
 cookie = "0.16"
-rusqlite = "0.27.0"
+comrak = "0.12.1"
+chrono = "0.4.19"
+rusqlite = { version = "0.27.0", features = ["bundled"] }
 tokio = { version = "1.0", features = ["full"] }
 tower = { version = "0.4.12", features = ["limit"] }
 tracing = "0.1"

@@ -4,8 +4,11 @@ use askama::Template;
 #[template(
     source = r#"
 <head>
-  <style src="css/tachyons.min.css"></style>
-  <script src="js/htmx.js"></script>
+  <style src="/css/tachyons.min.css"></style>
+  <script src="/js/htmx.js"></script>
+  <link rel='stylesheet' href='/css/water.css'>
+  <link rel='stylesheet' href='/css/page.css'>
+  <link rel='stylesheet' href='/css/utility.css'>
   <title>witwiki - {{ title }} </title>
   {{children}}
 </head>
