@@ -21,15 +21,11 @@ pub fn bind(router: Router) -> Router {
                     .prepare("select id, user_id, body, title from post limit :numposts")
                     .unwrap()
                     .query_and_then(&[(":numposts", "10")], |row| {
-                        // let ts_str = row.get::<usize, String>(4)?;
-                        // println!("{:?}", ts_str);
                         Ok(Post {
                             id: row.get(0)?,
                             user_id: row.get(1)?,
                             body: row.get(2)?,
                             title: row.get(3)?,
-                            // timestamp_int: DateTime::from_str(&ts_str)
-                            //     .expect("failed to extract timestamp"),
                         })
                     })
                     .expect("posts query failed")
@@ -38,23 +34,15 @@ pub fn bind(router: Router) -> Router {
                 Html(page::page(
                     &request_state,
                     &head::head(&"home", None),
+                    vec![],
                     &&pages::home::home(&"", recent_posts, &"").await,
                 ))
             }),
         )
-        .route("/wiki/:id", get(posts_handler))
+        .route("/wiki/:id", get(page_routes::wiki::get::handle_get))
         .route(
-            // @todo make this a */edit path wildcard
             "/wiki/edit/:id",
-            get(
-                |Path(id): Path<usize>, request_state: Extension<RequestState>| async move {
-                    page_routes::posts::get::get(
-                        &request_state,
-                        page_routes::posts::common::get_page_post(&request_state.db, id).await,
-                        id,
-                    )
-                },
-            ),
+            get(page_routes::wiki::edit::get::handle_get),
         )
         .route(
             "/x/user/settings",
@@ -62,6 +50,7 @@ pub fn bind(router: Router) -> Router {
                 Html(page::page(
                     &request_state,
                     &head::head(&"user settings", None),
+                    vec![],
                     &&pages::user_settings::user_settings(&"", &""),
                 ))
             }),

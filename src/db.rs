@@ -16,6 +16,11 @@ impl Db {
             ),
         }
     }
+    pub fn new_in_mem() -> Self {
+        Db {
+            connection: Mutex::new(Connection::open_in_memory().unwrap()),
+        }
+    }
     pub async fn migrate(&self) -> Result<()> {
         let mut migrations = vec![include_str!("../db/migrations/0001.sql")];
         migrations = [

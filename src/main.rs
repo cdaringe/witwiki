@@ -22,6 +22,7 @@ mod page_routes;
 mod pages;
 mod post;
 mod preferences;
+mod request;
 mod user;
 
 #[tokio::main]

@@ -40,29 +40,44 @@ struct HeaderT<'a> {
     children: &'a str,
 }
 
-fn get_action_links(is_authenticated: bool) -> Vec<Link> {
-    let auth_link = if is_authenticated {
-        link("/logout", "logout")
-    } else {
-        link("/login", "login")
-    };
+#[derive(Eq, Hash, PartialEq)]
+pub enum NavOption {
+    Authenticated,
+    EditPost(usize),
+    AddPost,
+}
+
+fn get_action_links(nav_states: Vec<NavOption>) -> Vec<Link> {
+    let is_authenticated = nav_states.contains(&NavOption::Authenticated);
     let mut action_links = if is_authenticated {
-        vec![
-            link("/x/user/settings", "user settings"),
-            link("/edit", "edit"),
-            link("/x/add", "add"),
-        ]
+        (vec![
+            Some(link("/logout", "logout")),
+            Some(link("/x/user/settings", "user settings")),
+        ])
+        .into_iter()
+        .filter_map(|it| it)
+        .collect::<Vec<Link>>()
     } else {
-        vec![]
+        vec![link("/login", "login")]
     };
-    action_links.insert(0, auth_link);
+    for nav_opt in nav_states {
+        match nav_opt {
+            NavOption::EditPost(post_id) => {
+                action_links.push(link(&format!("/wiki/edit/{}", post_id), "edit"));
+            }
+            NavOption::AddPost => {
+                action_links.push(link("/wiki/create", "new post"));
+            }
+            NavOption::Authenticated => {}
+        }
+    }
     action_links
 }
 
-pub fn header(nav_links: &Vec<Link>, is_authenticated: bool, children: &str) -> String {
+pub fn header(nav_links: &Vec<Link>, nav_states: Vec<NavOption>, children: &str) -> String {
     HeaderT {
         nav_links,
-        action_links: &get_action_links(is_authenticated),
+        action_links: &get_action_links(nav_states),
         children,
     }
     .render()
