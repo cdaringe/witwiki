@@ -12,6 +12,7 @@ insert into user (username, first_name, last_name)
 -- migration
 insert into post (user_id, body, title) values
    (3, 'tacos are great
+
 - they taste great
 - they look great', 'best foods'),
    (1, 'Mr. Hammond, After Careful Consideration, **I Have Decided Not To Endorse Your Park.**', 'dino dna!');

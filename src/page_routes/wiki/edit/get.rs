@@ -1,5 +1,5 @@
 use crate::{
-    components::{head, page, pages::post},
+    components::{head, page, pages::edit_post},
     middleware::app_state::RequestState,
     page_routes::wiki::common::get_page_post,
 };
@@ -14,6 +14,6 @@ pub async fn handle_get(
         &request_state,
         &head::head(&post.title, None),
         vec![],
-        &post::post(&post.title, &post.body),
+        &edit_post::edit_post(post, ""),
     ))
 }

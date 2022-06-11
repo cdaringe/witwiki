@@ -26,7 +26,6 @@ struct IndexT<'a> {
 }
 
 fn get_nav(request_state: &RequestState, mut nav_states: Vec<NavOption>) -> String {
-    let mut nav_states = vec![];
     let is_authenticated = request_state.get_cookies().get("foo").is_some();
     if is_authenticated {
         nav_states.push(nav::NavOption::Authenticated);

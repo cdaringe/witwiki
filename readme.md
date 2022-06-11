@@ -6,7 +6,7 @@ A practical wiki, for persons.
 
 ## install
 
-- []()
+1. **Option 1**: `cargo install witwiki` (tbd)
 
 ## why
 

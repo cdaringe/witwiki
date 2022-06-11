@@ -27,7 +27,9 @@ pub fn link(href: &str, children: &str) -> Link {
       {% endfor %}
     </nav>
   </nav>
-  <input class='search mt-3 ml-3 mr-3' placeholder="Search..." />
+  <div class="pl-4 pr-4">
+    <input class='search w-full' placeholder="Search..." />
+  </div>
   {{children}}
 </div>
 "#,
