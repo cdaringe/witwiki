@@ -8,6 +8,16 @@ A practical wiki, for persons.
 
 1. **Option 1**: `cargo install witwiki` (tbd)
 
+## run
+
+### dev
+
+- `rm -f wit.db && cargo watch -x fmt -x run`
+
+### prod
+
+- set `RUST_ENV=production`
+
 ## why
 
 The vast majority of wiki softwares:

@@ -30,6 +30,7 @@ impl Db {
         .concat();
         let conn = self.connection.lock().await;
         for migration in migrations {
+            println!("migrating {}", migration);
             conn.execute_batch(migration).expect("migration failed");
         }
         Ok(())

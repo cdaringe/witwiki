@@ -1659,6 +1659,8 @@ dependencies = [
  "comrak",
  "cookie",
  "rusqlite",
+ "serde",
+ "serde_json",
  "tokio",
  "tower",
  "tower-http",

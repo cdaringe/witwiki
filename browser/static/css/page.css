@@ -51,3 +51,8 @@ main {
 
 @media (max-width: 800px) {
 }
+
+#editor {
+  max-height: 400px;
+  overflow-y: hidden;
+}

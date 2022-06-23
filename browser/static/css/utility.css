@@ -1,57 +1,54 @@
 .pa-2 {
   padding: var(--pa2);
 }
-
 .pa-3 {
   padding: var(--pa3);
 }
-
 .pa-4 {
   padding: var(--pa4);
 }
-
 .pl-2 {
   padding-left: var(--pa2);
 }
-
 .pl-3 {
   padding-left: var(--pa3);
 }
-
 .pl-4 {
   padding-left: var(--pa4);
 }
-
 .pr-2 {
   padding-right: var(--pa2);
 }
-
 .pr-3 {
   padding-right: var(--pa3);
 }
-
 .pr-4 {
   padding-right: var(--pa4);
 }
-
+.pt-2 {
+  padding-top: var(--pa2);
+}
+.pt-3 {
+  padding-top: var(--pa3);
+}
+.pt-4 {
+  padding-top: var(--pa4);
+}
 .w-full {
   width: 100%;
 }
-
 .m-2 {
   margin: var(--pa2);
 }
 .m-3 {
   margin: var(--pa3);
 }
-
 .mt-2 {
   margin-top: var(--pa2);
 }
 .mt-3 {
   margin-top: var(--pa3);
 }
-
 .ml-2 {
   margin-left: var(--pa2);
 }
@@ -61,7 +58,6 @@
 .ml-4 {
   margin-left: var(--pa4);
 }
-
 .mr-2 {
   margin-right: var(--pa2);
 }

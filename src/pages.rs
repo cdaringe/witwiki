@@ -18,7 +18,9 @@ pub fn bind(router: Router) -> Router {
             get(|request_state: Extension<RequestState>| async move {
                 let conn = request_state.db.connection.lock().await;
                 let recent_posts = conn
-                    .prepare("select id, user_id, body, title from post limit :numposts")
+                    .prepare(
+                        "select id, user_id, body, title, created_at, slug from post limit :numposts",
+                    )
                     .unwrap()
                     .query_and_then(&[(":numposts", "10")], |row| {
                         Ok(Post {
@@ -26,6 +28,8 @@ pub fn bind(router: Router) -> Router {
                             user_id: row.get(1)?,
                             body: row.get(2)?,
                             title: row.get(3)?,
+                            created_at: row.get(4)?,
+                            slug: row.get(5)?
                         })
                     })
                     .expect("posts query failed")
