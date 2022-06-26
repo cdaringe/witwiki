@@ -20,4 +20,4 @@ tokio = { version = "1.0", features = ["full"] }
 tower = { version = "0.4.12", features = ["limit"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-tower-http = { version = "0.3.0", features = ["fs", "trace", "cors"] }
+tower-http = { version = "0.3.4", features = ["fs", "trace", "cors"] }
