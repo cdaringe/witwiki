@@ -26,6 +26,7 @@ mod authentication;
 mod components;
 mod db;
 mod middleware;
+mod models;
 mod page_routes;
 mod pages;
 mod post;

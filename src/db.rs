@@ -29,9 +29,19 @@ impl Db {
         ]
         .concat();
         let conn = self.connection.lock().await;
-        for migration in migrations {
-            println!("migrating {}", migration);
-            conn.execute_batch(migration).expect("migration failed");
+        for migration_file in migrations {
+            for migration in migration_file
+                .split("-- migration")
+                .map(|v| v.trim())
+                .filter(|v| v.len() > 0)
+            {
+                match conn.execute_batch(migration) {
+                    Ok(_) => (),
+                    Err(e) => {
+                        panic!("failed to migrate: {:?}\n\nmigration:\n{}", e, migration)
+                    }
+                }
+            }
         }
         Ok(())
     }

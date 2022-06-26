@@ -20,6 +20,15 @@ create table if not exists post (
   created_at int not null default (strftime('%s','now'))
 );
 -- migration
+create table if not exists post_tag (
+  id integer primary key autoincrement,
+  post_id int not null,
+  tag_id int not null,
+  foreign key (post_id) references post (id),
+  foreign key (tag_id) references tag (id),
+  unique (post_id, tag_id)
+);
+-- migration
 create index if not exists slug_idx ON post (slug);
 -- migration
 create table if not exists post_history (
@@ -28,4 +37,17 @@ create table if not exists post_history (
   post_id int not null,
   body_diff text not null,
   title varchar(300) not null
+);
+-- migration
+create table if not exists media_type (
+  id integer primary key autoincrement,
+  description varchar(20) not null unique
+);
+-- migration
+create table if not exists tag (
+  id integer primary key autoincrement,
+  media_type_id integer not null,
+  tag varchar(30) not null,
+  foreign key (media_type_id) references media_type (id),
+  unique (media_type_id, tag)
 );

@@ -12,12 +12,9 @@ pub fn get_cookies_by_name(cookies_str: &str) -> CookiesByName<'static> {
     cookies_str
         .split(";")
         .into_iter()
-        .filter_map(|cookie_str| {
-            println!("cookie_str: {:?}", cookie_str);
-            match Cookie::parse(cookie_str) {
-                Ok(cookie) => Some(cookie),
-                _ => None,
-            }
+        .filter_map(|cookie_str| match Cookie::parse(cookie_str) {
+            Ok(cookie) => Some(cookie),
+            _ => None,
         })
         .fold(HashMap::new(), |mut map, cookie| {
             map.insert(cookie.name().to_owned(), cookie.into_owned());
