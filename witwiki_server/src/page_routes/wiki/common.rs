@@ -1,4 +1,5 @@
-use crate::{db::Db, post::Post};
+use crate::post::Post;
+use witwiki_db::Db;
 
 pub async fn get_page_post(db: &Db, id: usize) -> Post {
     let conn = db.connection.lock().await;
@@ -12,7 +13,8 @@ pub async fn get_page_post(db: &Db, id: usize) -> Post {
                 body: row.get(2)?,
                 title: row.get(3)?,
                 created_at: row.get(4)?,
-                slug: row.get(5)?,
+                updated_at: row.get(5)?,
+                slug: row.get(6)?,
             })
         },
     )

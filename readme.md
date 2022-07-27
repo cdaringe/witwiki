@@ -12,7 +12,7 @@ A practical wiki, for persons.
 
 ### dev
 
-- `rm -f wit.db && cargo watch -x fmt -x run`
+- `rm -f wit.db* && cargo watch -s 'bash onchange.sh'`
 
 ### prod
 

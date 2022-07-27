@@ -1,0 +1,24 @@
+[package]
+name = "witwiki_server"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+askama = "0.10"
+axum = "0.5.6"
+axum-extra = "0.3.3"
+by_address = "1.0.4"
+cookie = "0.16"
+comrak = "0.12.1"
+chrono = "0.4.19"
+serde = { version = "1.0.137", features = ["derive"] }
+serde_json = "1.0.81"
+tower = { version = "0.4.12", features = ["limit"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tower-http = { version = "0.3.0", features = ["fs", "trace", "cors"] }
+witwiki_common = { "path" = "../witwiki_common"}
+witwiki_db = { "path" = "../witwiki_db"}
+sqlx = { version = "0.5", features = [ "runtime-tokio-rustls", "sqlite" ] }

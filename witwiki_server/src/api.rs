@@ -1,10 +1,12 @@
 use crate::middleware::app_state::RequestState;
+use crate::models::post_comment::PostComment;
 use crate::models::recent_tags::RecentTag;
 use crate::post::Post;
 use axum::extract::Path;
 use axum::{extract::Query, routing::get, Extension, Json, Router};
-use rusqlite::NO_PARAMS;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
+use sqlx;
+// witwiki_db
 
 #[derive(Debug, Serialize)]
 struct ApiResponse<T>
@@ -24,8 +26,6 @@ where
     }
 }
 
-use serde::Deserialize;
-
 #[derive(Deserialize)]
 struct GetPostsQuery {
     limit: usize,
@@ -44,7 +44,7 @@ pub fn bind(router: Router) -> Router {
                             let posts = conn
                                 .prepare(
                                     r"
-              select id, user_id, substring(body, 0, 200) as body, title, created_at, slug from post
+              select id, user_id, substring(body, 0, 200) as body, title, created_at, updated_at, slug from post
               order by id desc
               limit 10
             ",
@@ -57,7 +57,8 @@ pub fn bind(router: Router) -> Router {
                                         body: row.get(2)?,
                                         title: row.get(3)?,
                                         created_at: row.get(4)?,
-                                        slug: row.get(5)?,
+                                        updated_at: row.get(5)?,
+                                        slug: row.get(6)?,
                                     })
                                 })
                                 .unwrap()
@@ -79,7 +80,7 @@ pub fn bind(router: Router) -> Router {
                     let posts = conn
                         .prepare(
                             r"
-            select id, user_id, body, title, created_at, slug from post
+            select id, user_id, body, title, created_at, updated_at, slug from post
             where slug=(?)
           ",
                         )
@@ -91,17 +92,52 @@ pub fn bind(router: Router) -> Router {
                                 body: row.get(2)?,
                                 title: row.get(3)?,
                                 created_at: row.get(4)?,
-                                slug: row.get(5)?,
+                                updated_at: row.get(5)?,
+                                slug: row.get(6)?,
                             })
                         })
                         .unwrap()
                         .map(|r| r.unwrap())
                         .collect::<Vec<Post>>();
                     if true {
-                        Ok(Json(ApiResponse::new(posts, 10)))
+                        Ok(Json(ApiResponse::new(posts, 1)))
                     } else {
-                        Err("booo")
+                        Err("unimplemented")
                     }
+                },
+            ),
+        )
+        .route(
+            "/api/posts/:slug/comments",
+            get(
+                |request_state: Extension<RequestState>, Path(slug): Path<String>| async move {
+                    let mut pool = request_state.db.pool.lock().await.acquire().await.unwrap();
+                    let query_res = sqlx::query!(
+                        r"
+select pc.* from post_comment pc
+inner join post p on p.id=pc.post_id
+where p.slug = ?
+limit 1000
+",
+                        slug
+                    )
+                    .fetch_all(&mut pool)
+                    .await
+                    .unwrap();
+                    let comments = query_res
+                        .into_iter()
+                        .map(|v| PostComment {
+                            id: v.id,
+                            user_id: v.user_id,
+                            body: v.body,
+                            created_at: v.created_at,
+                        })
+                        .collect::<Vec<PostComment>>();
+                      if true {
+                        Ok(Json(ApiResponse::new(comments, 1)))
+                      } else {
+                        Err("unimplemented! i cannot figure out how to map the result from the sql call above into Err(&str) gracefully, so i force compiler inference by this garbagio")
+                      }
                 },
             ),
         )
@@ -116,7 +152,7 @@ select count(recent_tags.tag_id) as count, t.id as id, t.tag as tag from
 (
   select pt.tag_id tag_id
   from (select id from post order by id desc limit 100) as posts
-  inner join post_tag  pt on pt.post_id=posts.id
+  inner join post_tag pt on pt.post_id=posts.id
 ) as recent_tags
 inner join tag t on recent_tags.tag_id=t.id
 group by tag_id
@@ -137,7 +173,7 @@ order by count desc",
                     println!("len: {}", len);
                     Ok(Json(ApiResponse::new(values, len)))
                 } else {
-                    Err("unimplemented")
+                    Err(String::from("unimplemented"))
                 }
             }),
         )

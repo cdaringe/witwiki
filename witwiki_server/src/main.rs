@@ -1,7 +1,6 @@
 #![feature(const_trait_impl)]
 #![feature(is_some_with)]
 
-use crate::db::Db;
 use crate::middleware::parse_cookies::middleware as cookie_middleware;
 use axum::body::Body;
 use axum::middleware::from_fn;
@@ -20,6 +19,8 @@ use tower::limit::ConcurrencyLimitLayer;
 use tower_http::cors::CorsLayer;
 use tower_http::{services::ServeDir, trace::TraceLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use witwiki_common::{dotenv::dotenv, tokio};
+use witwiki_db::Db;
 
 mod api;
 mod authentication;
@@ -35,12 +36,18 @@ mod request;
 mod user;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), String> {
+    let _loaded = match dotenv() {
+        Ok(path) => (),
+        Err(e) => {
+            println!("no .env file loaded: {}", e.to_string());
+            ()
+        }
+    };
     let log_filter =
         std::env::var("RUST_LOG").unwrap_or_else(|_| "witwiki=debug,tower_http=debug".into());
-
-    let db = Arc::new(Db::new());
-    (db.migrate().await).expect("db failed to migrate");
+    let db = Arc::new(Db::new().await?);
+    // const VERSION: &str = env!("CARGO_PKG_VERSION");
     tracing_subscriber::registry()
         .with(tracing_subscriber::EnvFilter::new(log_filter))
         .with(tracing_subscriber::fmt::layer())
@@ -70,12 +77,13 @@ async fn main() {
         .layer(Extension(RequestState::new(db)))
         .fallback(get_service(ServeDir::new("./browser/static")).handle_error(handle_error));
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let addr = SocketAddr::from(([127, 0, 0, 1], 9999));
     tracing::debug!("listening on http://{}", addr);
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await
         .unwrap();
+    Ok(())
 }
 
 async fn handle_error(_err: io::Error) -> impl IntoResponse {

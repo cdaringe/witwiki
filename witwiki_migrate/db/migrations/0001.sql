@@ -17,7 +17,8 @@ create table if not exists post (
   body text not null,
   title varchar(300) not null,
   slug text not null unique,
-  created_at int not null default (strftime('%s','now'))
+  created_at int not null default (strftime('%s','now')),
+  updated_at int not null default (strftime('%s','now'))
 );
 -- migration
 create table if not exists post_tag (
@@ -51,3 +52,17 @@ create table if not exists tag (
   foreign key (media_type_id) references media_type (id),
   unique (media_type_id, tag)
 );
+-- migration
+create table if not exists post_comment (
+  id integer primary key autoincrement,
+  post_id int not null,
+  body text not null,
+  user_id int not null,
+  created_at int not null default (strftime('%s','now')),
+  foreign key (post_id) references post (id),
+  foreign key (user_id) references user (id),
+  unique (user_id, created_at)
+);
+create table if not exists meta (
+  version int not null
+)

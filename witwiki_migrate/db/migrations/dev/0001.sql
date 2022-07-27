@@ -11,12 +11,12 @@ insert into user (username, first_name, last_name)
   on conflict(username) do nothing;
 
 -- migration
-insert into post (user_id, body, title, created_at, slug) values
+insert into post (user_id, body, title, created_at, updated_at, slug) values
    (3, 'tacos are great
 
 - they taste great
-- they look great', 'best foods', 1655869054, "tacos-locos"),
-   (1, 'Mr. Hammond, After Careful Consideration, **I Have Decided Not To Endorse Your Park.**', 'dino dna!', 1655969058, "jurassic-part-rejection-letter")
+- they look great', 'best foods', 1655869054, 1655869254, "tacos-locos"),
+   (1, 'Mr. Hammond, After Careful Consideration, **I Have Decided Not To Endorse Your Park.**', 'dino dna!', 1655969058, 1655969158, "jurassic-part-rejection-letter")
   on conflict(slug) do nothing;
 
 -- migration
@@ -36,3 +36,14 @@ insert into tag (media_type_id, tag)
 insert into post_tag (post_id, tag_id)
   values (1, 1), (1, 2), (2, 2), (2, 3)
   on conflict(post_id, tag_id) do nothing;
+-- migration
+insert into post_comment (body, post_id, user_id, created_at)
+  values
+   ('i like turtles', 1, 1, 1656000000),
+   ('no no no, I LIKE turtles, you dont like turtles', 1, 2, 1656000001),
+   ('i like turtles', 2, 1, 1656000002),
+   ('no no no, I LIKE turtles, you dont like turtles', 2, 2, 1656000003)
+  on conflict(user_id, created_at) do nothing;
+-- migration
+insert into meta (version)
+  values (1);

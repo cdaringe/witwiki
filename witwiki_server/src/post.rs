@@ -7,6 +7,7 @@ pub struct Post {
     pub body: String,
     pub title: String,
     pub created_at: usize,
+    pub updated_at: usize,
     pub slug: String,
 }
 

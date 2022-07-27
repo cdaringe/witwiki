@@ -8,6 +8,7 @@ use crate::{
     post::Post,
 };
 use axum::{extract::Path, response::Html, routing::get, Extension, Router};
+use witwiki_common::rusqlite;
 
 pub fn bind(router: Router) -> Router {
     let posts_handler =
@@ -29,7 +30,8 @@ pub fn bind(router: Router) -> Router {
                             body: row.get(2)?,
                             title: row.get(3)?,
                             created_at: row.get(4)?,
-                            slug: row.get(5)?
+                            updated_at: row.get(5)?,
+                            slug: row.get(6)?
                         })
                     })
                     .expect("posts query failed")

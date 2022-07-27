@@ -6,8 +6,9 @@ use axum::{
 };
 use cookie::Cookie;
 use std::{collections::HashMap, sync::Arc};
+use witwiki_db::Db;
 
-use crate::{authentication::LoggedIn, db::Db};
+use crate::authentication::LoggedIn;
 
 type CookieMap = HashMap<String, Cookie<'static>>;
 
