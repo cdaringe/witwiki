@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 askama = "0.10"
-axum = "0.5.6"
+axum = "0.5.15"
 axum-extra = "0.3.3"
 by_address = "1.0.4"
 cookie = "0.16"
