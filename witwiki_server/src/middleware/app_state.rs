@@ -1,3 +1,5 @@
+#![allow(dead_code, unused)]
+
 use axum::{
     async_trait,
     extract::{FromRequest, RequestParts},

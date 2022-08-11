@@ -1,3 +1,5 @@
+#![allow(dead_code, unused)]
+
 use crate::page_routes;
 /**
  * @todo can we use https://github.com/launchbadge/sqlx#querying instead??

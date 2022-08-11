@@ -1,3 +1,5 @@
+#![allow(dead_code, unused)]
+
 use crate::middleware::app_state::RequestState;
 use crate::models::post_comment::PostComment;
 use crate::models::recent_tags::RecentTag;
@@ -6,7 +8,6 @@ use axum::extract::Path;
 use axum::{extract::Query, routing::get, Extension, Json, Router};
 use serde::{Deserialize, Serialize};
 use sqlx;
-// witwiki_db
 
 #[derive(Debug, Serialize)]
 struct ApiResponse<T>
@@ -112,27 +113,23 @@ pub fn bind(router: Router) -> Router {
             get(
                 |request_state: Extension<RequestState>, Path(slug): Path<String>| async move {
                     let mut pool = request_state.db.pool.lock().await.acquire().await.unwrap();
-                    let query_res = sqlx::query!(
+                    let comments: Vec<PostComment> = sqlx::query_as!(PostComment,
                         r"
-select pc.* from post_comment pc
+select
+  pc.id,
+  pc.body,
+  pc.user_id,
+  pc.created_at
+from post_comment pc
 inner join post p on p.id=pc.post_id
 where p.slug = ?
 limit 1000
 ",
                         slug
                     )
-                    .fetch_all(&mut pool)
+                              .fetch_all(&mut pool)
                     .await
                     .unwrap();
-                    let comments = query_res
-                        .into_iter()
-                        .map(|v| PostComment {
-                            id: v.id,
-                            user_id: v.user_id,
-                            body: v.body,
-                            created_at: v.created_at,
-                        })
-                        .collect::<Vec<PostComment>>();
                       if true {
                         Ok(Json(ApiResponse::new(comments, 1)))
                       } else {

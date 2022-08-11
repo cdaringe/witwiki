@@ -4,7 +4,6 @@
 use crate::middleware::parse_cookies::middleware as cookie_middleware;
 use axum::body::Body;
 use axum::middleware::from_fn;
-use axum::response::Html;
 use axum::Extension;
 use axum::{
     http::{HeaderValue, Method, StatusCode},
@@ -38,7 +37,7 @@ mod user;
 #[tokio::main]
 async fn main() -> Result<(), String> {
     let _loaded = match dotenv() {
-        Ok(path) => (),
+        Ok(_path) => (),
         Err(e) => {
             println!("no .env file loaded: {}", e.to_string());
             ()
@@ -91,8 +90,4 @@ async fn handle_error(_err: io::Error) -> impl IntoResponse {
         StatusCode::INTERNAL_SERVER_ERROR,
         "Something went wrong. :|",
     )
-}
-
-async fn echo_cookies(Extension(request_state): Extension<RequestState>) -> impl IntoResponse {
-    Html::from(format!("<h1>{:?}</h1>", request_state.get_cookies()))
 }

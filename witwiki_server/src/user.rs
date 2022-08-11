@@ -1,3 +1,5 @@
+#![allow(dead_code, unused)]
+
 use crate::preferences::UserPreferences;
 
 #[derive(Debug)]

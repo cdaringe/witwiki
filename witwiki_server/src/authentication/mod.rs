@@ -1,3 +1,5 @@
+#![allow(dead_code, unused)]
+
 #[derive(Debug, Clone)]
 pub enum Role {
     Admin,
