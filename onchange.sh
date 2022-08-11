@@ -1,5 +1,6 @@
 # rm -f wit.db && cargo watch -s 'bash onchange.sh'
 set -eo pipefail
+export RUST_BACKTRACE=1
 
 projects=("witwiki_common" "witwiki_db" "witwiki_migrate" "witwiki_server")
 

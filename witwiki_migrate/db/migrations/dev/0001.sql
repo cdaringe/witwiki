@@ -11,6 +11,19 @@ insert into user (username, first_name, last_name)
   on conflict(username) do nothing;
 
 -- migration
+-- @warn hash in dev mode is not actually hashed :|
+insert into user_authentication_strategy_unpw (user_id, hash)
+  values
+    (1, 'password'),
+    (2, 'password'),
+    (3, 'password'),
+    (4, 'password'),
+    (5, 'password'),
+    (6, 'password'),
+    (7, 'password')
+on conflict(user_id) do nothing;
+
+-- migration
 insert into post (user_id, body, title, created_at, updated_at, slug) values
    (3, 'tacos are great
 
