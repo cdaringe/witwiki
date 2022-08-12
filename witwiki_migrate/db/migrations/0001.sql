@@ -1,10 +1,10 @@
 create table if not exists user (
-    id integer primary key autoincrement,
+    id integer not null primary key autoincrement,
     username varchar(50) not null unique,
     first_name varchar(50),
     last_name varchar(50),
     user_preferences_id int,
-    authentication_strategy varchar(10) default "unpw"
+    authentication_strategy int not null default 0
 );
 -- migration
 create table if not exists user_authentication_strategy_unpw (

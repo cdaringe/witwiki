@@ -10,7 +10,7 @@ for project in "${projects[@]}"; do
   case $project in
     witwiki_migrate | witwiki_server)
       echo ".: running project $project"
-      cargo build -p $project
+      # cargo build -p $project
       cargo run -p $project;;
     *)
       echo ".: building project $project"

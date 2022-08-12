@@ -1,11 +1,20 @@
 #![allow(dead_code, unused)]
 
+use std::io::Error;
+
 use crate::middleware::app_state::RequestState;
 use crate::models::post_comment::PostComment;
 use crate::models::recent_tags::RecentTag;
+use crate::models::user::User;
 use crate::post::Post;
 use axum::extract::Path;
-use axum::{extract::Query, routing::get, Extension, Json, Router};
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
+use axum::{
+    extract::{Json as ExtractJson, Query},
+    routing::{get, post},
+    Extension, Json, Router,
+};
 use serde::{Deserialize, Serialize};
 use sqlx;
 
@@ -33,8 +42,57 @@ struct GetPostsQuery {
     offset: usize,
 }
 
+#[derive(Deserialize)]
+struct AuthenticationUnPwBody {
+    password: String,
+    username: String,
+}
+
+// async fn please_login(auth: Json<AuthenticationUnPwBody>) -> Result<String, Error> {
+//     Ok(String::from("weee"))
+// }
+async fn login(
+    request_state: Extension<RequestState>,
+    body: Json<AuthenticationUnPwBody>,
+) -> impl IntoResponse {
+    let mut pool = request_state.db.pool.lock().await.acquire().await.unwrap();
+    let user_opt: Result<User, _> = sqlx::query_as!(
+        User,
+        r"
+select
+id,
+username,
+first_name,
+last_name,
+user_preferences_id,
+authentication_strategy
+from user
+where username = ?
+",
+        body.username
+    )
+    .fetch_one(&mut pool)
+    .await;
+    if user_opt.is_err() {
+        return (StatusCode::UNAUTHORIZED, Err("bummer"));
+    }
+    if user_opt.unwrap().authentication_strategy != 0 {
+        return (StatusCode::BAD_GATEWAY, Err("unimplemented"));
+    }
+
+    if true {
+        (StatusCode::OK, Ok(Json(ApiResponse::new([true], 10))))
+    } else {
+        (StatusCode::BAD_GATEWAY, Err("invalid query"))
+    }
+}
+
 pub fn bind(router: Router) -> Router {
     router
+    .route(
+      "/api/login",
+      post(login),
+  )
         .route(
             "/api/posts/recent",
             get(

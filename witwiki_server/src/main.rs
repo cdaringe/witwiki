@@ -32,7 +32,6 @@ mod pages;
 mod post;
 mod preferences;
 mod request;
-mod user;
 
 #[tokio::main]
 async fn main() -> Result<(), String> {
