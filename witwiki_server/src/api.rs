@@ -1,22 +1,29 @@
 #![allow(dead_code, unused)]
 
+use std::collections::{hash_set, HashSet};
 use std::io::Error;
 
 use crate::authentication::{self, Authenticated};
 use crate::middleware::app_state::RequestState;
 use crate::models::identity_auth_strategy_unpw::IdentityUnPw;
+use crate::models::jwt::{encode, Claims};
 use crate::models::post_comment::PostComment;
 use crate::models::recent_tags::RecentTag;
 use crate::models::user::User;
 use crate::post::Post;
+use axum::body::Body;
 use axum::extract::Path;
-use axum::http::StatusCode;
-use axum::response::IntoResponse;
+use axum::http::header::SET_COOKIE;
+use axum::http::{Request, StatusCode};
+use axum::response::{AppendHeaders, IntoResponse};
 use axum::{
     extract::{Json as ExtractJson, Query},
     routing::{get, post},
     Extension, Json, Router,
 };
+use chrono::{offset, DateTime, Utc};
+use cookie::time::{Duration, OffsetDateTime};
+use cookie::Cookie;
 use serde::{Deserialize, Serialize};
 use sqlx;
 
@@ -52,8 +59,14 @@ struct AuthenticationUnPwBody {
 
 async fn login(
     request_state: Extension<RequestState>,
+    // req: Request<Body>,
     body: Json<AuthenticationUnPwBody>,
 ) -> impl IntoResponse {
+    // let authority = match req.uri().authority() {
+    //     Some(v) => v.to_string(),
+    //     None => return (StatusCode::BAD_REQUEST).into_response(),
+    // };
+    let authority = "localhost:9999".to_string();
     let mut pool = request_state.db.pool.lock().await.acquire().await.unwrap();
     let user_result: Result<User, _> = sqlx::query_as!(
         User,
@@ -72,7 +85,6 @@ where username = ?
     )
     .fetch_one(&mut pool)
     .await;
-
     if let Ok(user) = user_result
         && user.authentication_strategy == 1
         && let Ok(identity) = sqlx::query_as!(
@@ -94,17 +106,28 @@ where username = ?
             match authentication::authenticate(&body.password, &identity.hash) {
               Ok(auth_state) => {
                 if auth_state == Authenticated::In {
-                  return (StatusCode::OK, Ok(Json(ApiResponse::new([true], 10))));
+                  let duration = Duration::days(1);
+                  let s = duration.as_seconds_f64() as usize;
+                  let session_jwt = encode(&Claims {
+                    sub: "wee".to_string(),
+                    exp: s,
+                    roles: HashSet::new()
+                  }, "@todo").unwrap();
+                  let jwt_cookie = Cookie::build("jwt", session_jwt).domain(authority).path("/").secure(true).http_only(true).max_age(duration).finish();
+                  return (StatusCode::OK,
+                    AppendHeaders([(SET_COOKIE, format!("{key}={value}", key=jwt_cookie.name(), value=jwt_cookie.value()))]),
+                    Json(ApiResponse::new([true], 10))
+                  ).into_response();
                 }
               },
               Err(v) => {
                 println!("unexpected authorization failure: {}.\nare DB records invalid?", v);
-                return (StatusCode::INTERNAL_SERVER_ERROR, Err("500"))
+                return (StatusCode::INTERNAL_SERVER_ERROR, Err::<(), &str>("500")).into_response()
               }
             }
 
     }
-    (StatusCode::UNAUTHORIZED, Err("409"))
+    (StatusCode::UNAUTHORIZED, Err::<(), &str>("409")).into_response()
 }
 
 pub fn bind(router: Router) -> Router {

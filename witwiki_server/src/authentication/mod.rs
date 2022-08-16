@@ -4,18 +4,11 @@ use argon2::{
     Argon2, Params, Version,
 };
 
-#[derive(Debug, Clone)]
-pub enum Role {
-    Admin,
-    ReadOnly,
-    UserDefined(String),
-}
-
-#[derive(Debug, Clone)]
-pub struct User {
-    roles: Option<Vec<Role>>,
-    username: String,
-}
+// #[derive(Debug, Clone)]
+// pub struct User {
+//     roles: Option<Vec<Role>>,
+//     username: String,
+// }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Authenticated {
