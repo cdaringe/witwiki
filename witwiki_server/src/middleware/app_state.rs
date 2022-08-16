@@ -10,14 +10,14 @@ use cookie::Cookie;
 use std::{collections::HashMap, sync::Arc};
 use witwiki_db::Db;
 
-use crate::authentication::LoggedIn;
+use crate::authentication::Authenticated;
 
 type CookieMap = HashMap<String, Cookie<'static>>;
 
 #[derive(Clone, Debug)]
 pub struct RequestState {
     cookies_by_name: CookieMap,
-    user: Option<LoggedIn>,
+    user: Option<Authenticated>,
     pub db: Arc<Db>,
 }
 

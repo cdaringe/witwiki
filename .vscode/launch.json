@@ -7,32 +7,26 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug executable 'witwiki'",
+      "name": "Debug executable 'witwiki_server'",
       "cargo": {
-        "args": [
-          "build",
-          "--bin=witwiki",
-          "--package=witwiki"
-        ],
-        "filter": {
-          "name": "witwiki",
-          "kind": "bin"
-        }
+        "args": ["run", "-p=witwiki_server"]
+        // "filter": {
+        //   "name": "witwiki",
+        //   "kind": "bin"
+        // }
       },
       "args": [],
-      "cwd": "${workspaceFolder}"
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "DATABASE_URL": "sqlite://wit.db?mode=rwc"
+      }
     },
     {
       "type": "lldb",
       "request": "launch",
       "name": "Debug unit tests in executable 'witwiki'",
       "cargo": {
-        "args": [
-          "test",
-          "--no-run",
-          "--bin=witwiki",
-          "--package=witwiki"
-        ],
+        "args": ["test", "--no-run", "--bin=witwiki", "--package=witwiki"],
         "filter": {
           "name": "witwiki",
           "kind": "bin"

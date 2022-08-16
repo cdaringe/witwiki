@@ -14,13 +14,13 @@ insert into user (username, first_name, last_name)
 -- @warn hash in dev mode is not actually hashed :|
 insert into identity_authentication_strategy_unpw (user_id, salt, hash)
   values
-    (1, 'salt', 'password'),
-    (2, 'salt', 'password'),
-    (3, 'salt', 'password'),
-    (4, 'salt', 'password'),
-    (5, 'salt', 'password'),
-    (6, 'salt', 'password'),
-    (7, 'salt', 'password')
+    (1, 'saltymaltyshalty', '$argon2id$v=19$m=4096,t=3,p=1$saltymaltyshalty$YdDhIf1eRL6/hpLotjFHDCEyYYZWzP6ESqp83gabrYk'), -- hash of 'password'
+    (2, 'saltymaltyshalty', '$argon2id$v=19$m=4096,t=3,p=1$saltymaltyshalty$YdDhIf1eRL6/hpLotjFHDCEyYYZWzP6ESqp83gabrYk'),
+    (3, 'saltymaltyshalty', '$argon2id$v=19$m=4096,t=3,p=1$saltymaltyshalty$YdDhIf1eRL6/hpLotjFHDCEyYYZWzP6ESqp83gabrYk'),
+    (4, 'saltymaltyshalty', '$argon2id$v=19$m=4096,t=3,p=1$saltymaltyshalty$YdDhIf1eRL6/hpLotjFHDCEyYYZWzP6ESqp83gabrYk'),
+    (5, 'saltymaltyshalty', '$argon2id$v=19$m=4096,t=3,p=1$saltymaltyshalty$YdDhIf1eRL6/hpLotjFHDCEyYYZWzP6ESqp83gabrYk'),
+    (6, 'saltymaltyshalty', '$argon2id$v=19$m=4096,t=3,p=1$saltymaltyshalty$YdDhIf1eRL6/hpLotjFHDCEyYYZWzP6ESqp83gabrYk'),
+    (7, 'saltymaltyshalty', '$argon2id$v=19$m=4096,t=3,p=1$saltymaltyshalty$YdDhIf1eRL6/hpLotjFHDCEyYYZWzP6ESqp83gabrYk')
 on conflict(user_id) do nothing;
 
 -- migration

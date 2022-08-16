@@ -2,7 +2,9 @@
 
 use std::io::Error;
 
+use crate::authentication::{self, Authenticated};
 use crate::middleware::app_state::RequestState;
+use crate::models::identity_auth_strategy_unpw::IdentityUnPw;
 use crate::models::post_comment::PostComment;
 use crate::models::recent_tags::RecentTag;
 use crate::models::user::User;
@@ -53,7 +55,7 @@ async fn login(
     body: Json<AuthenticationUnPwBody>,
 ) -> impl IntoResponse {
     let mut pool = request_state.db.pool.lock().await.acquire().await.unwrap();
-    let user_opt: Result<User, _> = sqlx::query_as!(
+    let user_result: Result<User, _> = sqlx::query_as!(
         User,
         r"
 select
@@ -70,29 +72,55 @@ where username = ?
     )
     .fetch_one(&mut pool)
     .await;
-    match user_opt {
-        Err(_) => (StatusCode::UNAUTHORIZED, Err("409")),
-        Ok(user) => {
-            if user.authentication_strategy == 0 {
-                return (StatusCode::BAD_GATEWAY, Err("500"));
-            } else {
-                // actually... do some hash comparison suff
-                return (StatusCode::OK, Ok(Json(ApiResponse::new([true], 10))));
+
+    if let Ok(user) = user_result
+        && user.authentication_strategy == 1
+        && let Ok(identity) = sqlx::query_as!(
+                IdentityUnPw,
+                r"
+          select
+            id,
+            hash,
+            user_id,
+            salt
+          from identity_authentication_strategy_unpw
+          where user_id = ?
+          ",
+                user.id
+            )
+            .fetch_one(&mut pool)
+            .await
+        {
+            match authentication::authenticate(&body.password, &identity.hash) {
+              Ok(auth_state) => {
+                if auth_state == Authenticated::In {
+                  return (StatusCode::OK, Ok(Json(ApiResponse::new([true], 10))));
+                }
+              },
+              Err(v) => {
+                println!("unexpected authorization failure: {}.\nare DB records invalid?", v);
+                return (StatusCode::INTERNAL_SERVER_ERROR, Err("500"))
+              }
             }
-        }
+
     }
+    (StatusCode::UNAUTHORIZED, Err("409"))
 }
 
 pub fn bind(router: Router) -> Router {
     router
     .route(
+      /**
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"username": "raptorboy", "password": "password"}' \
+  http://localhost:9999/api/login
+       */
       "/api/login",
       post(login),
   )
         .route(
             "/api/posts/recent",
-            get(
-                |request_state: Extension<RequestState>, q: Query<GetPostsQuery>| async move {
+            get(     |request_state: Extension<RequestState>, q: Query<GetPostsQuery>| async move {
                     let conn = request_state.db.connection.lock().await;
                     match q.limit {
                         0..=100 => {

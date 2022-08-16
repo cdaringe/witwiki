@@ -4,11 +4,11 @@ create table if not exists user (
     first_name varchar(50),
     last_name varchar(50),
     user_preferences_id int,
-    authentication_strategy int not null default 0
+    authentication_strategy int not null default 1
 );
 -- migration
 create table if not exists identity_authentication_strategy_unpw (
-  id integer primary key autoincrement,
+  id integer not null primary key autoincrement,
   salt varchar(200) not null,
   hash varchar(200) not null,
   user_id int not null unique,
@@ -16,7 +16,7 @@ create table if not exists identity_authentication_strategy_unpw (
 );
 -- migration
 create table if not exists user_preference (
-    id integer primary key autoincrement,
+    id integer not null primary key autoincrement,
     ui_editor_theme_name varchar(50)
 );
 -- migration
