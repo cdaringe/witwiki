@@ -10,7 +10,7 @@ env:
 
 jobs:
   checks:
-    uses: "./onchange.yml"
+    uses: "./.github/workflows/onchange.yml"
   main:
     name: main
     runs-on: ubuntu-latest
