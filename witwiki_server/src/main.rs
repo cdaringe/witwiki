@@ -23,12 +23,9 @@ use witwiki_db::Db;
 
 mod api;
 mod authentication;
-mod components;
 mod db;
 mod middleware;
 mod models;
-mod page_routes;
-mod pages;
 mod post;
 mod preferences;
 mod request;
@@ -52,7 +49,6 @@ async fn main() -> Result<(), String> {
         .init();
 
     let mut app: Router<Body> = Router::new();
-    app = pages::bind(app);
     app = api::bind(app);
 
     if !std::env::var("RUST_ENV").is_ok_and(|v| v == "production") {

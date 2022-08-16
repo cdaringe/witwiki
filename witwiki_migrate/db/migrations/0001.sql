@@ -7,8 +7,9 @@ create table if not exists user (
     authentication_strategy int not null default 0
 );
 -- migration
-create table if not exists user_authentication_strategy_unpw (
+create table if not exists identity_authentication_strategy_unpw (
   id integer primary key autoincrement,
+  salt varchar(200) not null,
   hash varchar(200) not null,
   user_id int not null unique,
   foreign key (user_id) references user (id)

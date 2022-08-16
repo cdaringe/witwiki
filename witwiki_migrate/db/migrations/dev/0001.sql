@@ -12,15 +12,15 @@ insert into user (username, first_name, last_name)
 
 -- migration
 -- @warn hash in dev mode is not actually hashed :|
-insert into user_authentication_strategy_unpw (user_id, hash)
+insert into identity_authentication_strategy_unpw (user_id, salt, hash)
   values
-    (1, 'password'),
-    (2, 'password'),
-    (3, 'password'),
-    (4, 'password'),
-    (5, 'password'),
-    (6, 'password'),
-    (7, 'password')
+    (1, 'salt', 'password'),
+    (2, 'salt', 'password'),
+    (3, 'salt', 'password'),
+    (4, 'salt', 'password'),
+    (5, 'salt', 'password'),
+    (6, 'salt', 'password'),
+    (7, 'salt', 'password')
 on conflict(user_id) do nothing;
 
 -- migration
