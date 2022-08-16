@@ -1,6 +1,6 @@
 # witwiki
 
-[![Rust](https://github.com/cdaringe/witwiki/actions/workflows/main.yml/badge.svg)](https://github.com/cdaringe/witwiki/actions/workflows/main.yml)
+[![main](https://github.com/cdaringe/witwiki/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/cdaringe/witwiki/actions/workflows/main.yml)
 
 A practical wiki, for persons.
 
@@ -10,11 +10,11 @@ A practical wiki, for persons.
 
 ## run
 
-### dev
+### development
 
-- `rm -f wit.db* && cargo watch -s 'bash onchange.sh'`
+See [.github/contributing.md](.github/contributing.md).
 
-### prod
+### production
 
 - set `RUST_ENV=production`
 
