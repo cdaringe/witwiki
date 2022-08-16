@@ -1,0 +1,28 @@
+name: Rust
+
+on:
+  pull_request:
+    branches: ["main"]
+
+env:
+  CARGO_TERM_COLOR: always
+  DATABASE_URL: sqlite://wit.db?mode=rwc
+
+jobs:
+  check:
+    name: onchange
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+          components: rustfmt, clippy
+      - name: init-dev-db
+        run: cargo run -p witwiki_migrate
+      - uses: Swatinem/rust-cache@v1
+      - run: cargo fmt --check
+      - run: cargo check
+      - run: cargo build
