@@ -9,6 +9,6 @@ edition = "2021"
 dotenv = "0.15.0"
 # remove rusqlite in favor of sqlx
 rusqlite = { version = "0.27.0", features = ["bundled"] }
-sqlx = { version = "0.5", features = [ "runtime-tokio-rustls", "sqlite" ] }
+sqlx = { version = "0.6", features = [ "runtime-tokio-rustls", "sqlite" ] }
 tokio = { version = "1.0", features = ["full"] }
 
