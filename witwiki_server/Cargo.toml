@@ -12,7 +12,7 @@ axum-extra = "0.3.7"
 by_address = "1.0.4"
 cookie = "0.16"
 comrak = "0.12.1"
-chrono = "0.4.19"
+chrono = "0.4.22"
 jsonwebtoken = "8.1.1"
 serde = { version = "1.0.137", features = ["derive"] }
 serde_json = "1.0.81"
