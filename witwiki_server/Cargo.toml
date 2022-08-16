@@ -22,4 +22,4 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tower-http = { version = "0.3.0", features = ["fs", "trace", "cors"] }
 witwiki_common = { "path" = "../witwiki_common"}
 witwiki_db = { "path" = "../witwiki_db"}
-sqlx = { version = "0.5", features = [ "runtime-tokio-rustls", "sqlite" ] }
+sqlx = { version = "0.6", features = [ "runtime-tokio-rustls", "sqlite" ] }
