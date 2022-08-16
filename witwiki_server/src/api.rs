@@ -105,14 +105,15 @@ where username = ?
               Ok(auth_state) => {
                 if auth_state == Authenticated::In {
                   let duration = Duration::days(1);
-                  let s = duration.as_seconds_f64() as usize;
+                  let exp = duration.as_seconds_f64() as usize;
                   let session_jwt = encode(&Claims {
                     sub: "wee".to_string(),
-                    exp: s,
+                    exp,
                     roles: HashSet::new()
                   }, "@todo").unwrap();
                   let jwt_cookie = Cookie::build("jwt", session_jwt).domain(authority).path("/").secure(true).http_only(true).max_age(duration).finish();
-                  return (StatusCode::OK,
+                  return (
+                    StatusCode::OK,
                     AppendHeaders([(SET_COOKIE, jwt_cookie.to_string())]),
                     Json(ApiResponse::new([true], 10))
                   ).into_response();
