@@ -9,10 +9,12 @@ env:
   DATABASE_URL: sqlite://wit.db?mode=rwc
 
 jobs:
+  checks:
+    uses: "./onchange.yml"
   main:
     name: main
     runs-on: ubuntu-latest
-    needs: check
+    needs: [checks]
     steps:
       - run: echo "onchange flow should have run :)"
       # - uses: actions/checkout@v3
