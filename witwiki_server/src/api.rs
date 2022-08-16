@@ -5,19 +5,21 @@ use std::io::Error;
 
 use crate::authentication::{self, Authenticated};
 use crate::middleware::app_state::RequestState;
-use crate::models::identity_auth_strategy_unpw::IdentityUnPw;
-use crate::models::jwt::{encode, Claims};
-use crate::models::post_comment::PostComment;
-use crate::models::recent_tags::RecentTag;
-use crate::models::user::User;
-use crate::post::Post;
-use axum::body::Body;
-use axum::extract::Path;
-use axum::http::header::SET_COOKIE;
-use axum::http::{Request, StatusCode};
-use axum::response::{AppendHeaders, IntoResponse};
+use crate::{
+    models::{
+        identity_auth_strategy_unpw::IdentityUnPw,
+        jwt::{encode, Claims},
+        post_comment::PostComment,
+        recent_tags::RecentTag,
+        user::User,
+    },
+    post::Post,
+};
 use axum::{
-    extract::{Json as ExtractJson, Query},
+    body::Body,
+    extract::{Host, Path, Query, RequestParts},
+    http::{header::SET_COOKIE, Request, StatusCode},
+    response::{AppendHeaders, IntoResponse},
     routing::{get, post},
     Extension, Json, Router,
 };
@@ -58,15 +60,11 @@ struct AuthenticationUnPwBody {
 }
 
 async fn login(
-    request_state: Extension<RequestState>,
-    // req: Request<Body>,
     body: Json<AuthenticationUnPwBody>,
+    request_state: Extension<RequestState>,
+    Host(host): Host,
 ) -> impl IntoResponse {
-    // let authority = match req.uri().authority() {
-    //     Some(v) => v.to_string(),
-    //     None => return (StatusCode::BAD_REQUEST).into_response(),
-    // };
-    let authority = "localhost:9999".to_string();
+    let authority = host;
     let mut pool = request_state.db.pool.lock().await.acquire().await.unwrap();
     let user_result: Result<User, _> = sqlx::query_as!(
         User,
@@ -115,7 +113,7 @@ where username = ?
                   }, "@todo").unwrap();
                   let jwt_cookie = Cookie::build("jwt", session_jwt).domain(authority).path("/").secure(true).http_only(true).max_age(duration).finish();
                   return (StatusCode::OK,
-                    AppendHeaders([(SET_COOKIE, format!("{key}={value}", key=jwt_cookie.name(), value=jwt_cookie.value()))]),
+                    AppendHeaders([(SET_COOKIE, jwt_cookie.to_string())]),
                     Json(ApiResponse::new([true], 10))
                   ).into_response();
                 }
