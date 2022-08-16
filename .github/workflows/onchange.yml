@@ -1,4 +1,4 @@
-name: Rust
+name: onchange
 
 on: [workflow_call, pull_request]
 
