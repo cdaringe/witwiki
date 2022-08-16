@@ -48,9 +48,6 @@ struct AuthenticationUnPwBody {
     username: String,
 }
 
-// async fn please_login(auth: Json<AuthenticationUnPwBody>) -> Result<String, Error> {
-//     Ok(String::from("weee"))
-// }
 async fn login(
     request_state: Extension<RequestState>,
     body: Json<AuthenticationUnPwBody>,
@@ -73,17 +70,16 @@ where username = ?
     )
     .fetch_one(&mut pool)
     .await;
-    if user_opt.is_err() {
-        return (StatusCode::UNAUTHORIZED, Err("bummer"));
-    }
-    if user_opt.unwrap().authentication_strategy != 0 {
-        return (StatusCode::BAD_GATEWAY, Err("unimplemented"));
-    }
-
-    if true {
-        (StatusCode::OK, Ok(Json(ApiResponse::new([true], 10))))
-    } else {
-        (StatusCode::BAD_GATEWAY, Err("invalid query"))
+    match user_opt {
+        Err(_) => (StatusCode::UNAUTHORIZED, Err("409")),
+        Ok(user) => {
+            if user.authentication_strategy == 0 {
+                return (StatusCode::BAD_GATEWAY, Err("500"));
+            } else {
+                // actually... do some hash comparison suff
+                return (StatusCode::OK, Ok(Json(ApiResponse::new([true], 10))));
+            }
+        }
     }
 }
 

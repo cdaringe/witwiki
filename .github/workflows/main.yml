@@ -21,6 +21,8 @@ jobs:
           toolchain: nightly
           override: true
           components: rustfmt, clippy
+      - name: init-dev-db
+        run: cargo run -p witwiki_migrate
       - uses: Swatinem/rust-cache@v1
       - run: cargo fmt --check
       - run: cargo check
