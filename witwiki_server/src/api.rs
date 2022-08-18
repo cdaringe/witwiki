@@ -5,6 +5,7 @@ use std::io::Error;
 
 use crate::authentication::{self, Authenticated};
 use crate::middleware::app_state::RequestState;
+use crate::models::jwt::build_cookie;
 use crate::{
     models::{
         identity_auth_strategy_unpw::IdentityUnPw,
@@ -62,9 +63,7 @@ struct AuthenticationUnPwBody {
 async fn login(
     body: Json<AuthenticationUnPwBody>,
     request_state: Extension<RequestState>,
-    Host(host): Host,
 ) -> impl IntoResponse {
-    let authority = host;
     let mut pool = request_state.db.pool.lock().await.acquire().await.unwrap();
     let user_result: Result<User, _> = sqlx::query_as!(
         User,
@@ -111,11 +110,11 @@ where username = ?
                     exp,
                     roles: HashSet::new()
                   }, "@todo").unwrap();
-                  let jwt_cookie = Cookie::build("jwt", session_jwt).domain(authority).path("/").secure(true).http_only(true).max_age(duration).finish();
+                  let jwt_cookie = build_cookie(Some(session_jwt), duration);
                   return (
                     StatusCode::OK,
                     AppendHeaders([(SET_COOKIE, jwt_cookie.to_string())]),
-                    Json(ApiResponse::new([true], 10))
+                    Json(ApiResponse::new([user], 10))
                   ).into_response();
                 }
               },
@@ -129,6 +128,18 @@ where username = ?
     (StatusCode::UNAUTHORIZED, Err::<(), &str>("409")).into_response()
 }
 
+async fn logout() -> impl IntoResponse {
+    (
+        StatusCode::OK,
+        AppendHeaders([(
+            SET_COOKIE,
+            build_cookie(None, Duration::seconds(0)).to_string(),
+        )]),
+        Json(ApiResponse::new([true], 1)),
+    )
+        .into_response()
+}
+
 pub fn bind(router: Router) -> Router {
     router
     .route(
@@ -140,6 +151,16 @@ curl -X POST -H "Content-Type: application/json" \
       "/api/login",
       post(login),
   )
+
+  .route(
+    /**
+curl -X POST -H "Content-Type: application/json" \
+-d '{"username": "raptorboy", "password": "password"}' \
+http://localhost:9999/api/login
+     */
+    "/api/logout",
+    post(logout),
+)
         .route(
             "/api/posts/recent",
             get(     |request_state: Extension<RequestState>, q: Query<GetPostsQuery>| async move {
