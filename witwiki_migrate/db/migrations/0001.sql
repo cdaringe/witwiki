@@ -21,7 +21,7 @@ create table if not exists user_preference (
 );
 -- migration
 create table if not exists post (
-  id integer primary key autoincrement,
+  id integer not null primary key autoincrement,
   user_id int not null,
   body text not null,
   title varchar(300) not null,
@@ -31,7 +31,7 @@ create table if not exists post (
 );
 -- migration
 create table if not exists post_tag (
-  id integer primary key autoincrement,
+  id integer not null primary key autoincrement,
   post_id int not null,
   tag_id int not null,
   foreign key (post_id) references post (id),

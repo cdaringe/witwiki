@@ -1,3 +1,4 @@
+pub mod api_response;
 pub mod identity_auth_strategy_unpw;
 pub mod jwt;
 pub mod post_comment;
