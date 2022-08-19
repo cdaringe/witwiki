@@ -57,9 +57,7 @@ async fn main() -> Result<(), String> {
             true
         }
     };
-    /**
-     * @todo support CORS via config
-     */
+    // @todo support CORS via config
     if !is_production {
         app = app.layer(
             // see https://docs.rs/tower-http/latest/tower_http/cors/index.html
