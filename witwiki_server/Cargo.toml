@@ -15,7 +15,7 @@ chrono = "0.4.22"
 jsonwebtoken = "8.1.1"
 argon2 = "0.4"
 rand_core = { version = "0.6", features = ["std"] }
-serde = { version = "1.0.143", features = ["derive"] }
+serde = { version = "1.0.144", features = ["derive"] }
 serde_json = "1.0.83"
 tower = { version = "0.4.13", features = ["limit"] }
 tracing = "0.1"
