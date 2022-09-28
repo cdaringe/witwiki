@@ -9,11 +9,18 @@ where
     total: usize,
 }
 
-impl<T> ApiResponse<T>
+impl<T> ApiResponse<Vec<T>>
 where
     T: Serialize,
 {
-    pub fn new(values: T, total: usize) -> Self {
+    pub fn new(values: Vec<T>, total: usize) -> Self {
         Self { values, total }
+    }
+}
+
+impl ApiResponse<Vec<()>> {
+    pub fn empty() -> Self {
+        let values: Vec<()> = vec![];
+        Self { values, total: 0 }
     }
 }

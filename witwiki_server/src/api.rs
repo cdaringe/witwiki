@@ -1,17 +1,22 @@
 use axum::{
-    routing::{get, post},
+    routing::{get, patch, post},
     Router,
 };
 
-use crate::routes::{login::login, logout::logout, posts, posts_comments, posts_tags};
+use crate::routes::{
+    login::login,
+    logout::logout,
+    posts::{self},
+    posts_comments, posts_tags,
+};
 
 pub fn bind(router: Router) -> Router {
     router
         .route("/api/login", post(login))
         .route("/api/logout", post(logout))
         .route("/api/posts/recent", get(posts::recent::get))
+        .route("/api/posts/", patch(posts::patch::patch))
         .route("/api/posts/:slug", get(posts::get::get))
-        // .route("/api/posts/:slug", patch(|| unimplemented!("")))
         .route("/api/posts/:slug/comments", get(posts_comments::get::get))
         .route("/api/posts_tags/recent", get(posts_tags::get::get))
 }

@@ -1,0 +1,11 @@
+[package]
+name = "witwiki_difffoo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+slice-diff-patch = "1.2.1"
+serde = { version = "1.0.143", features = ["derive"] }
+
+[dev-dependencies]
+serde_json = "1.0.85"

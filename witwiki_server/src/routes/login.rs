@@ -1,9 +1,9 @@
 use crate::{
     authentication,
     authentication::Authenticated,
+    dao::auth::query_unpw_identity,
     models::{
         api_response::ApiResponse,
-        identity_auth_strategy_unpw::IdentityUnPw,
         jwt::{build_cookie, encode, Claims},
         user::User,
     },
@@ -40,12 +40,12 @@ pub async fn login(
         User,
         r"
 select
-id,
-username,
-first_name,
-last_name,
-user_preferences_id,
-authentication_strategy
+  id,
+  username,
+  first_name,
+  last_name,
+  user_preferences_id,
+  authentication_strategy
 from user
 where username = ?
 ",
@@ -55,21 +55,7 @@ where username = ?
     .await;
     if let Ok(user) = user_result
       && user.authentication_strategy == 1
-      && let Ok(identity) = sqlx::query_as!(
-              IdentityUnPw,
-              r"
-        select
-          id,
-          hash,
-          user_id,
-          salt
-        from identity_authentication_strategy_unpw
-        where user_id = ?
-        ",
-              user.id
-          )
-          .fetch_one(&mut pool)
-          .await
+      && let Ok(identity) =  query_unpw_identity(user.id, &mut pool).await
       {
           match authentication::authenticate(&body.password, &identity.hash) {
             Ok(auth_state) => {
@@ -85,7 +71,7 @@ where username = ?
                 return (
                   StatusCode::OK,
                   AppendHeaders([(SET_COOKIE, jwt_cookie.to_string())]),
-                  Json(ApiResponse::new([user], 10))
+                  Json(ApiResponse::new(vec![user], 10))
                 ).into_response();
               }
             },

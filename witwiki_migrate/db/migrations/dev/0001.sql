@@ -33,10 +33,10 @@ insert into post (user_id, body, title, created_at, updated_at, slug) values
   on conflict(slug) do nothing;
 
 -- migration
-insert into post_history (user_id, post_id, body_diff, title) values
-  (3, 1, '- fake_del\n+ fake_add', 'worst foods'),
-  (3, 1, '- fake_del\n+ fake_add', 'ok foods'),
-  (2, 2, '- fake_del\n+ fake_add', 'dino-dna');
+insert into post_history (user_id, post_id, revision, title) values
+  (3, 1, 1, 'worst foods'),
+  (3, 1, 2, 'ok foods'),
+  (2, 2, 1, 'dino-dna');
 
 -- migration
 insert into media_type (description) values ('post')

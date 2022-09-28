@@ -6,21 +6,24 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+argon2 = "0.4"
 axum = "0.5.15"
 axum-extra = "0.3.7"
 by_address = "1.0.4"
-cookie = "0.16"
-comrak = "0.14.0"
 chrono = "0.4.22"
+comrak = "0.14.0"
+cookie = "0.16"
+git2 = "0.15.0"
 jsonwebtoken = "8.1.1"
-argon2 = "0.4"
 rand_core = { version = "0.6", features = ["std"] }
 serde = { version = "1.0.143", features = ["derive"] }
 serde_json = "1.0.83"
+sqlx = { version = "0.6", features = [ "runtime-tokio-rustls", "sqlite" ] }
 tower = { version = "0.4.13", features = ["limit"] }
+tower-http = { version = "0.3.4", features = ["fs", "trace", "cors"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-tower-http = { version = "0.3.4", features = ["fs", "trace", "cors"] }
 witwiki_common = { "path" = "../witwiki_common"}
 witwiki_db = { "path" = "../witwiki_db"}
-sqlx = { version = "0.6", features = [ "runtime-tokio-rustls", "sqlite" ] }
+witwiki_difffoo = { "path" = "../witwiki_difffoo"}
+

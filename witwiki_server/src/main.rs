@@ -20,6 +20,7 @@ use witwiki_db::Db;
 
 mod api;
 mod authentication;
+mod dao;
 mod db;
 mod middleware;
 mod models;

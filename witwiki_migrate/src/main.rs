@@ -4,14 +4,20 @@ use witwiki_db::Db;
 #[tokio::main]
 async fn main() -> Result<(), String> {
     let db = Db::new().await?;
-    let mut migrations = vec![include_str!("../db/migrations/0001.sql")];
+    let mut migrations = vec![(
+        "db/migrations/0001.sql",
+        include_str!("../db/migrations/0001.sql"),
+    )];
     migrations = [
         migrations,
-        vec![include_str!("../db/migrations/dev/0001.sql")],
+        vec![(
+            "db/migrations/dev/0001.sql",
+            include_str!("../db/migrations/dev/0001.sql"),
+        )],
     ]
     .concat();
     let pool = db.pool.lock().await;
-    for migration_file in migrations {
+    for (filename, migration_file) in migrations {
         for migration in migration_file
             .split("-- migration")
             .map(|v| v.trim())
@@ -20,7 +26,10 @@ async fn main() -> Result<(), String> {
             match pool.execute(migration).await {
                 Ok(_) => (),
                 Err(e) => {
-                    panic!("failed to migrate: {:?}\n\nmigration:\n{}", e, migration)
+                    panic!(
+                        "failed to migrate {}: {:?}\n\nmigration:\n{}",
+                        filename, e, migration
+                    )
                 }
             }
         }

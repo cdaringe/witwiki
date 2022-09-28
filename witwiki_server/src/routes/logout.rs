@@ -13,7 +13,7 @@ pub async fn logout() -> impl IntoResponse {
             SET_COOKIE,
             build_cookie(None, Duration::seconds(0)).to_string(),
         )]),
-        Json(ApiResponse::new([true], 1)),
+        Json(ApiResponse::new(vec![true], 1)),
     )
         .into_response()
 }

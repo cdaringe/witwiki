@@ -1,6 +1,6 @@
 use crate::models::role::Role;
 use cookie::{time::Duration, Cookie, SameSite};
-use jsonwebtoken::{encode as jwtencode, errors::Error, EncodingKey, Header};
+use jsonwebtoken::{decode as jwtdecode, encode as jwtencode, errors::Error, EncodingKey, Header};
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 
@@ -19,6 +19,10 @@ pub fn encode(claims: &Claims, secret: &str) -> Result<String, Error> {
         &EncodingKey::from_secret(secret.as_bytes()),
     )
 }
+
+// pub fn decode() -> {
+
+// }
 
 pub fn build_cookie<'a>(jwt: Option<String>, duration: Duration) -> Cookie<'a> {
     let value = match jwt {

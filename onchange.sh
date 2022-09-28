@@ -3,7 +3,7 @@ set -eo pipefail
 export RUST_BACKTRACE=1
 export DATABASE_URL=sqlite://wit.db?mode=rwc
 
-projects=("witwiki_common" "witwiki_db" "witwiki_migrate" "witwiki_server")
+projects=("witwiki_common" "witwiki_db" "witwiki_migrate" "witwiki_difffoo" "witwiki_server")
 
 for project in "${projects[@]}"; do
   cargo fmt

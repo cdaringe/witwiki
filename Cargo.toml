@@ -2,6 +2,7 @@
 
 members = [
   "witwiki_common",
+  "witwiki_difffoo",
   "witwiki_db",
   "witwiki_migrate",
   "witwiki_server",
