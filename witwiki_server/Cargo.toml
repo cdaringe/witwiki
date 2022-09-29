@@ -12,6 +12,7 @@ axum-extra = "0.3.7"
 by_address = "1.0.4"
 chrono = "0.4.22"
 comrak = "0.14.0"
+html2md = "0.2.13"
 cookie = "0.16"
 jsonwebtoken = "8.1.1"
 rand_core = { version = "0.6", features = ["std"] }

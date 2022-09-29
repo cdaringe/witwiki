@@ -1,12 +1,22 @@
-use axum::{extract::Json, http::StatusCode, response::IntoResponse, Extension};
+use axum::{
+    extract::{Json, Path},
+    http::StatusCode,
+    response::IntoResponse,
+    Extension,
+};
+use comrak;
+
 use serde::Deserialize;
 use sqlx::{self, Acquire};
 
-use crate::{error::e500, models::api_response::ApiResponse, RequestState};
+use crate::{
+    error::{e400, e500},
+    models::api_response::ApiResponse,
+    RequestState,
+};
 
 #[derive(Deserialize)]
 pub struct PatchQuery {
-    id: i64,
     body: String,
     title: String,
     _change_description: Option<String>,
@@ -18,6 +28,7 @@ pub struct BodyRecord {
 }
 
 pub async fn patch(
+    Path(id): Path<i64>,
     Json(model): Json<PatchQuery>,
     Extension(mut request_state): Extension<RequestState>,
 ) -> impl IntoResponse {
@@ -27,22 +38,23 @@ pub async fn patch(
     }
     let pool_mutex = &request_state.db.pool;
     let res: Vec<()> = vec![];
-    let bodies: Vec<BodyRecord> = sqlx::query_as!(
-        BodyRecord,
-        r"select body from post where id=? limit 1",
-        model.id
-    )
-    .fetch_all(&mut pool_mutex.lock().await.acquire().await.unwrap())
-    .await
-    .unwrap();
+    let bodies: Vec<BodyRecord> =
+        sqlx::query_as!(BodyRecord, r"select body from post where id=? limit 1", id)
+            .fetch_all(&mut pool_mutex.lock().await.acquire().await.unwrap())
+            .await
+            .unwrap();
     let last_body = match bodies.get(0) {
         None => return (StatusCode::NOT_FOUND, Json(ApiResponse::empty())).into_response(),
         Some(b) => b.body.to_owned(),
     };
     let _changes = witwiki_difffoo::get_changes(&last_body, &model.body);
     let mut pool = pool_mutex.lock().await.acquire().await.unwrap();
+    if model.body.len() == 0 {
+        return e400("missing body", "missing body").into_response();
+    }
     let res = match pool.begin().await {
         Ok(mut txn) => {
+            let md_body = html2md::parse_html(&model.body);
             sqlx::query!(
                 r"
           update post
@@ -51,9 +63,9 @@ pub async fn patch(
             title=?
           where id=?;
         ",
-                model.body,
+                md_body,
                 model.title,
-                model.id,
+                id,
             )
             .fetch_all(&mut txn)
             .await
