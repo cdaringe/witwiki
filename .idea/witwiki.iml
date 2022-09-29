@@ -8,6 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/witwiki_db/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/witwiki_migrate/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/witwiki_server/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/witwiki_difffoo/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />

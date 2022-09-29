@@ -1,7 +1,10 @@
 use crate::{
     authentication,
-    authentication::Authenticated,
-    dao::auth::query_unpw_identity,
+    dao::{
+        auth::query_unpw_identity,
+        user::{get_user, UserQuery},
+    },
+    error::{db_err, e400, e409, e500},
     models::{
         api_response::ApiResponse,
         jwt::{build_cookie, encode, Claims},
@@ -16,7 +19,11 @@ use axum::{
 };
 use cookie::time::Duration;
 use serde::Deserialize;
-use std::collections::HashSet;
+use sqlx::Error;
+use std::{
+    collections::HashSet,
+    fmt::{Display, Formatter},
+};
 
 #[derive(Deserialize)]
 pub struct AuthenticationUnPwBody {
@@ -36,51 +43,44 @@ pub async fn login(
     request_state: Extension<RequestState>,
 ) -> impl IntoResponse {
     let mut pool = request_state.db.pool.lock().await.acquire().await.unwrap();
-    let user_result: Result<User, _> = sqlx::query_as!(
-        User,
-        r"
-select
-  id,
-  username,
-  first_name,
-  last_name,
-  user_preferences_id,
-  authentication_strategy
-from user
-where username = ?
-",
-        body.username
-    )
-    .fetch_one(&mut pool)
-    .await;
-    if let Ok(user) = user_result
-      && user.authentication_strategy == 1
-      && let Ok(identity) =  query_unpw_identity(user.id, &mut pool).await
-      {
-          match authentication::authenticate(&body.password, &identity.hash) {
-            Ok(auth_state) => {
-              if auth_state == Authenticated::In {
+    let user = match get_user(UserQuery::from_username(&body.username), &mut pool).await {
+        Ok(u) => u,
+        Err(e) => return db_err(e).into_response(),
+    };
+    if user.authentication_strategy != 1 {
+        return (
+            StatusCode::BAD_REQUEST,
+            Err::<(), &str>("unsupported strategy"),
+        )
+            .into_response();
+    }
+    match query_unpw_identity(user.id, &mut pool).await {
+        Ok(identity) => match authentication::authenticate(&body.password, &identity.hash) {
+            Ok(is_authenticated) => {
+                if !is_authenticated {
+                    return e409("").into_response();
+                }
                 let duration = Duration::days(1);
                 let exp = duration.as_seconds_f64() as usize;
-                let session_jwt = encode(&Claims {
-                  sub: "".to_string(),
-                  exp,
-                  roles: HashSet::new()
-                }, "@todo").unwrap();
+                let session_jwt = encode(
+                    &Claims {
+                        sub: "".to_string(),
+                        exp,
+                        roles: HashSet::new(),
+                    },
+                    "@todo",
+                )
+                .unwrap();
                 let jwt_cookie = build_cookie(Some(session_jwt), duration);
                 return (
-                  StatusCode::OK,
-                  AppendHeaders([(SET_COOKIE, jwt_cookie.to_string())]),
-                  Json(ApiResponse::new(vec![user], 10))
-                ).into_response();
-              }
-            },
-            Err(v) => {
-              println!("unexpected authorization failure: {}.\nare DB records invalid?", v);
-              return (StatusCode::INTERNAL_SERVER_ERROR, Err::<(), &str>("500")).into_response()
+                    StatusCode::OK,
+                    AppendHeaders([(SET_COOKIE, jwt_cookie.to_string())]),
+                    Json(ApiResponse::new(vec![user], 10)),
+                )
+                    .into_response();
             }
-          }
-
-  }
-    (StatusCode::UNAUTHORIZED, Err::<(), &str>("409")).into_response()
+            Err(v) => return e500(&v, "").into_response(),
+        },
+        Err(e) => return e409(&format!("{:?}", e)).into_response(),
+    }
 }

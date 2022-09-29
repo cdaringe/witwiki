@@ -45,8 +45,8 @@ create table if not exists post_history (
   id integer primary key autoincrement,
   user_id int not null,
   post_id int not null,
-  revision int not null,
-  title varchar(300) not null
+  body_revision int not null,
+  title_revision int not null
 );
 -- migration
 create table if not exists post_body_revision_diff (

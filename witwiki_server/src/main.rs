@@ -1,3 +1,4 @@
+#![allow(warnings)]
 #![feature(const_trait_impl)]
 #![feature(is_some_with)]
 #![feature(let_chains)]
@@ -23,6 +24,7 @@ mod api;
 mod authentication;
 mod dao;
 mod db;
+mod error;
 mod middleware;
 mod models;
 mod post;

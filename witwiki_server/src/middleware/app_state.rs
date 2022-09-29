@@ -9,17 +9,37 @@ use axum::{
 
 use witwiki_db::Db;
 
-use crate::authentication::Authenticated;
+use crate::models::user::User;
 
 #[derive(Clone, Debug)]
 pub struct RequestState {
-    pub user: Option<Authenticated>,
+    _is_authenticated: Option<bool>,
+    // _user: Option<User>,
     pub db: Arc<Db>,
 }
 
 impl RequestState {
     pub fn new(db: Arc<Db>) -> Self {
-        RequestState { db, user: None }
+        RequestState {
+            db,
+            // _user: None,
+            _is_authenticated: None,
+        }
+    }
+
+    pub fn set_authenticated(self: &mut Self, x: bool) {
+        self._is_authenticated = Some(x);
+    }
+
+    pub fn is_authenticated(self: &mut Self) -> bool {
+        match self._is_authenticated {
+            Some(x) => x,
+            None => {
+                let is_authenticated = false;
+                self._is_authenticated = Some(is_authenticated);
+                is_authenticated
+            }
+        }
     }
 }
 
