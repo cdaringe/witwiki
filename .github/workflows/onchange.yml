@@ -22,5 +22,5 @@ jobs:
       - name: init-dev-db
         run: cargo run -p witwiki_migrate
       - run: cargo fmt --check
-      - run: cargo check
-      - run: cargo build
+      - run: TASK=check ./onchange.sh
+      - run: TASK=build ./onchange.sh
