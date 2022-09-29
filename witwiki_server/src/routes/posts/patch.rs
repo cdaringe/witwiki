@@ -9,7 +9,7 @@ pub struct PatchQuery {
     id: i64,
     body: String,
     title: String,
-    change_description: Option<String>,
+    _change_description: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -21,7 +21,7 @@ pub async fn patch(
     Json(model): Json<PatchQuery>,
     request_state: Extension<RequestState>,
 ) -> impl IntoResponse {
-    let user = match &request_state.user {
+    let _user = match &request_state.user {
         Some(u) => u,
         None => return (StatusCode::FORBIDDEN, Json(ApiResponse::empty())).into_response(),
     };
@@ -36,7 +36,7 @@ pub async fn patch(
         None => return (StatusCode::NOT_FOUND, Json(ApiResponse::new(res, 0))).into_response(),
         Some(b) => b.body.to_owned(),
     };
-    let changes = witwiki_difffoo::get_changes(&last_body, &model.body);
+    let _changes = witwiki_difffoo::get_changes(&last_body, &model.body);
     sqlx::query!(
         r"
           begin transaction;
