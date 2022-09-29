@@ -1,5 +1,6 @@
 #![feature(const_trait_impl)]
 #![feature(is_some_with)]
+#![feature(let_chains)]
 
 use std::{io, net::SocketAddr, sync::Arc};
 
