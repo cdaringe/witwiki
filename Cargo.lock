@@ -228,9 +228,9 @@ checksum = "37ccbd214614c6783386c1af30caf03192f17891059cecc394b4fb119e363de3"
 
 [[package]]
 name = "by_address"
-version = "1.0.4"
+version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e245704f60eb4eb45810d65cf14eb54d2eb50a6f3715fe2d7cd01ee905c2944f"
+checksum = "ca1bf8ff8ad87b91e7c79a8ebadd9cafa04107e8823a43f53d21a49e67588962"
 
 [[package]]
 name = "byteorder"
