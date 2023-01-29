@@ -5,6 +5,7 @@ use axum::{
 
 enum WitErrorFatal {
     Db(sqlx::Error),
+    Init(String),
 }
 enum WitErrorHandled {
     E400(String, String),
@@ -40,7 +41,7 @@ pub fn db_err(e: sqlx::Error) -> WitError {
 impl IntoResponse for WitError {
     fn into_response(self) -> Response {
         match self {
-            WitError::Fatal(WitErrorFatal::Db(_)) => (
+            WitError::Fatal(WitErrorFatal::Db(_)) | WitError::Fatal(WitErrorFatal::Init(_)) => (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 format!("Something went wrong"),
             ),
