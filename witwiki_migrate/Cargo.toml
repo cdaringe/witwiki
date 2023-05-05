@@ -6,6 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-serde = "1.0.160"
+serde = "1.0.162"
 witwiki_common = { "path" = "../witwiki_common"}
 witwiki_db = { "path" = "../witwiki_db"}
