@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 argon2 = "0.5"
 axum = "0.5.16"
-axum-extra = "0.7.5"
+axum-extra = "0.7.6"
 by_address = "1.1.0"
 chrono = "0.4.26"
 comrak = "0.18.0"
